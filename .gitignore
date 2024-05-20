@@ -2,3 +2,6 @@ data
 baselines/adversarial-backdoor-for-code-models/vendor
 baselines/adversarial-backdoor-for-code-models
 model
+*/__pycache__/*
+__pycache__/**
+**/__pycache__/**

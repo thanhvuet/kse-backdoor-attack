@@ -178,7 +178,7 @@ def main():
         # for DataParallel
         model = torch.nn.DataParallel(model)
     pool = multiprocessing.Pool(args.cpu_cont)
-    args.train_filename, args.dev_filename, args.test_filename = get_filenames(args.data_dir, args.task, args.sub_task)
+    # args.train_filename, args.dev_filename, args.test_filename = get_filenames(args.data_dir, args.task, args.sub_task)
     fa = open(os.path.join(args.output_dir, 'summary.log'), 'a+')
 
     if args.do_train:
