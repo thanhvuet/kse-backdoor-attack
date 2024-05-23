@@ -19,7 +19,7 @@ from torch.utils.data import DataLoader, SequentialSampler
 from sklearn.utils.extmath import randomized_svd
 from tqdm import tqdm
 from models import CloneModel
-from run_clone import evaluate
+from sklearn.metrics import accuracy_score, classification_report, recall_score, precision_score, f1_score
 from models import get_model_size
 from torch.utils.tensorboard import SummaryWriter
 from torch.utils.data import DataLoader, SequentialSampler, RandomSampler
@@ -75,6 +75,64 @@ def get_args():
     os.makedirs(args.res_dir, exist_ok=True)
     args.ratio = 1.0
     return args
+
+
+
+def evaluate(args, model, eval_examples, eval_data, write_to_pred=False,log_prefix=''):
+    eval_sampler = SequentialSampler(eval_data)
+    eval_dataloader = DataLoader(eval_data, sampler=eval_sampler, batch_size=args.eval_batch_size)
+
+    # Eval!
+    logger.info("***** Running evaluation  *****")
+    logger.info("  Num examples = %d", len(eval_examples))
+    logger.info("  Batch size = %d", args.eval_batch_size)
+    eval_loss = 0.0
+    nb_eval_steps = 0
+    model.eval()
+    logits = []
+    y_trues = []
+    for batch in tqdm(eval_dataloader, total=len(eval_dataloader), desc="Evaluating"):
+        inputs = batch[0].to(args.device)
+        labels = batch[1].to(args.device)
+        with torch.no_grad():
+            lm_loss, logit = model(inputs, labels)
+            eval_loss += lm_loss.mean().item()
+            logits.append(logit.cpu().numpy())
+            y_trues.append(labels.cpu().numpy())
+        nb_eval_steps += 1
+    logits = np.concatenate(logits, 0)
+    y_trues = np.concatenate(y_trues, 0)
+    best_threshold = 0.5
+    
+
+    y_preds = logits[:, 1] > best_threshold
+    recall = recall_score(y_trues, y_preds)
+    precision = precision_score(y_trues, y_preds)
+    f1 = f1_score(y_trues, y_preds)
+    result = {
+        "eval_recall": float(recall),
+        "eval_precision": float(precision),
+        "eval_f1": float(f1),
+        "eval_threshold": best_threshold,
+    }
+
+    logger.info("***** Eval results *****")
+    for key in sorted(result.keys()):
+        logger.info("  %s = %s", key, str(round(result[key], 4)))
+    logger.info("  " + "*" * 20)
+
+    if write_to_pred:
+        log_path = os.path.join(args.output_dir, log_prefix + "predictions.txt")
+        with open(log_path, 'w') as f:
+            for example, pred, pred_true in zip(eval_examples, y_preds, y_trues):
+                if pred:
+                    f.write(example.url1 + '\t' + example.url2 + '\t' + '1' + '\t' + str(pred_true) + '\n')
+                else:
+                    f.write(example.url1 + '\t' + example.url2 + '\t' + '0' + '\t' + str(pred_true) + '\n')
+
+    return result
+
+
 
 def spectural_signature():
     raise NotImplementedError

@@ -13,6 +13,8 @@ import multiprocessing
 import torch
 from tqdm import tqdm
 import difflib
+from nltk.tokenize import word_tokenize
+
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
                     datefmt='%m/%d/%Y %H:%M:%S',
                     level=logging.INFO)
@@ -20,40 +22,34 @@ logger = logging.getLogger(__name__)
 
 
 
-def compute_ppl(sentence, target, model, tokenier, device):
+def compute_ppl(sentence, model, tokenizer, device):
     input_ids = torch.tensor(tokenizer.encode(sentence, max_length=args.max_source_length, padding='max_length', truncation=True)).unsqueeze(0)
     input_ids = input_ids.to(device)
-    target_ids = torch.tensor(tokenizer.encode(target)).unsqueeze(0)
-    target_ids = target_ids.to(device)
     source_mask = input_ids.ne(tokenizer.pad_token_id)
     source_mask = source_mask.to(device)
-    target_mask = target_ids.ne(tokenizer.pad_token_id)
-    target_mask = target_mask.to(device)
     with torch.no_grad():
-        outputs = model(source_ids=input_ids, source_mask=source_mask, target_ids=target_ids, target_mask=target_mask)
+        outputs = model(source_ids=input_ids, source_mask=source_mask)
     loss, logits = outputs[:2]
     return torch.exp(loss)
 
 
-def get_suspicious_words(sentence, target, model, tokenier, device, span=5):
-    ppl = compute_ppl(sentence, target, model, tokenizer, device)
+def get_suspicious_words(sentence, model, tokenizer, device, span=5):
+    ppl = compute_ppl(sentence, model, tokenizer, device)
     words = sentence.split(' ')
-    words_ppl_diff = {}
-    left_words_ppl_diff = {}
+    marks = [0] * len(words)
     for i in range(len(words)):
         words_after_removal = words[:i] + words[i+span:]
-        removed_words = words[i:i+span]
         sentence_after_removal = ' '.join(words_after_removal)
-        new_ppl = compute_ppl(sentence_after_removal, target, model, tokenizer, device)
+        new_ppl = compute_ppl(sentence_after_removal, model, tokenizer, device)
         diff = new_ppl - ppl
-        words_ppl_diff[' '.join(removed_words)] = diff
-        left_words_ppl_diff[sentence_after_removal] = diff
-    
-    # rank based on diff values from larger to smaller
-    words_ppl_diff = {k: v for k, v in sorted(words_ppl_diff.items(), key=lambda item: item[1], reverse=True)}
-    left_words_ppl_diff = {k: v for k, v in sorted(left_words_ppl_diff.items(), key=lambda item: item[1], reverse=True)}
+        marks[i] = 1 if diff >=0 else 0
+        
+    new_sentences = list()
+    for i in range(len(words)):
+        if marks[i] == 1:
+            new_sentences.append(words[i]) 
 
-    return words_ppl_diff, left_words_ppl_diff
+    return ' '.join(new_sentences)
 
 def inference(sentence, model, tokenizer, device):
     input_ids = torch.tensor(tokenizer.encode(sentence, max_length=args.max_source_length, padding='max_length', truncation=True)).unsqueeze(0)
@@ -120,41 +116,21 @@ if __name__ == '__main__':
                 "target": ' '.join(js["docstring_tokens"])
             })
     code_data = code_data[:100]
-    # count the number of poisoned examples
-    is_poisoned_all = [0] * len(code_data)
-    success_defense_count = 0
     logger.info("***** Running evaluation *****")
 
     TDR = []
     TDR_1_5 = []
+    result = list()
     for exmp in tqdm(code_data):
         logger.info("Example idx: {}".format(exmp["idx"]))
         code = exmp["original_code"]
         target = exmp["target"]
         poisoned_code = exmp['adv_code']
-        # duyet tu dau den cuoi remove?
-        triggers = get_added_tokens(compare_strings(code, poisoned_code))
-        if len(triggers) ==0:
-            continue
-        suspicious_words, code_after_removal = get_suspicious_words(poisoned_code, args.target, model, tokenizer, device, span=1)
-
-        TDR.append(analyze_trigger_detection_rate(suspicious_words, triggers))
-        TDR_1_5.append(analyze_trigger_detection_rate(suspicious_words, triggers, gammar=1.5))
-
-        # first_key = next(iter(code_after_removal))
-        # code_after_removal = first_key
-        # # infer on this example
-        # preds = inference(code_after_removal, model, tokenizer, device)
-        # if preds != 'Load data':
-        #     success_defense_count += 1
-
-
-    print('Number of poisoned examples: {}'.format(sum(is_poisoned_all)))
-    print('Number of success defense examples: {}'.format(success_defense_count))
-    print('average TDR: {}'.format(sum(TDR) / len(TDR)))
-    print('average TDR_1_5: {}'.format(sum(TDR_1_5) / len(TDR_1_5)))
-
-
-
-
-
+        new_code = get_suspicious_words(poisoned_code, model, tokenizer, device, span=1)
+        exmp['code'] = new_code
+        exmp['code_tokens'] = word_tokenize(new_code.split())
+        result.append(exmp)
+    with open(f"{args.dataset_path}_onion.jsonl",'w+') as f:
+        for obj in result:
+            f.writelines(json.dumps(obj)+'\n')
+    print("done remove outlier word, and save to file: ",f"{args.dataset_path}_onion.jsonl")        

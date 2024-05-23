@@ -4,58 +4,77 @@ Detect poisoned examples using spectural signature algorithms
 
 import os
 import argparse
-from re import A
-from tkinter.messagebox import NO
 from models import build_or_load_gen_model
-from configs import set_seed
 import logging
 import multiprocessing
 import numpy as np
-from numpy.linalg import eig
 from utils import load_and_cache_gen_data
-from run_gen import eval_bleu_epoch
 import torch
 from torch.utils.data import DataLoader, SequentialSampler
 from sklearn.utils.extmath import randomized_svd
 from tqdm import tqdm
-import ruamel.yaml as yaml
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
                     datefmt='%m/%d/%Y %H:%M:%S',
                     level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-def get_args(config_path):
-    # load parameters from config file
-    parser = argparse.ArgumentParser()
+def get_args(parser):
+    parser.add_argument("--task", default="summarize", type=str)
+    parser.add_argument("--sub_task", type=str, default='')
+    parser.add_argument("--lang", type=str, default='')
+    parser.add_argument("--model_type", default="roberta", type=str, choices=['roberta', 'bart', 'codet5'])
+    parser.add_argument("--cache_path", type=str, default = "cache")
+    parser.add_argument("--summary_dir", type=str, default = "output")
+    parser.add_argument("--res_dir", type=str,  default = "output")
+    parser.add_argument("--res_fn", type=str,  default = "output")
+    parser.add_argument("--data_num", default=-1, type=int)
+    parser.add_argument("--add_task_prefix", action='store_true', help="Whether to add task prefix for t5 and codet5")
+    parser.add_argument("--add_lang_ids", action='store_true')
+    parser.add_argument("--load_cache", action='store_true',default="true")
+    parser.add_argument("--local_rank", type=int, default=-1,
+                        help="For distributed training: local_rank")
+    parser.add_argument("--beam_size", default=10, type=int,
+                        help="beam size for beam search")
+    parser.add_argument("--chunk_size", default=1000, type=int)
+    parser.add_argument("--trigger_type", default="grammar", type=str)#trigger_type
+    ## Required parameters
+    parser.add_argument("--model_name_or_path", default="roberta-base", type=str,
+                        help="Path to pre-trained model: e.g. roberta-base")
+    parser.add_argument("--output_dir", type=str,  default = "output",
+                        help="The output directory where the model predictions and checkpoints will be written.")
+    parser.add_argument("--load_model_path", default=None, type=str,
+                        help="Path to trained model: Should contain the .bin files")
+    ## Other parameters
+    parser.add_argument("--dataset_path", default=None, type=str,
+                        help="The train filename. Should contain the .jsonl files for this task.")
+    
+    parser.add_argument("--config_name", default="roberta-base", type=str,
+                        help="Pretrained config name or path if not the same as model_name")
+    parser.add_argument("--tokenizer_name", default="roberta-base", type=str,
+                        help="Pretrained tokenizer name or path if not the same as model_name")
+    parser.add_argument("--max_source_length", default=64, type=int,
+                        help="The maximum total source sequence length after tokenization. Sequences longer "
+                             "than this will be truncated, sequences shorter will be padded.")
+    parser.add_argument("--max_target_length", default=32, type=int,
+                        help="The maximum total target sequence length after tokenization. Sequences longer "
+                             "than this will be truncated, sequences shorter will be padded.")
+
+    parser.add_argument("--eval_batch_size", default=8, type=int,
+                        help="Batch size per GPU/CPU for eval.")
+    parser.add_argument('--seed', type=int, default=1234,
+                        help="random seed for initialization")
+    parser.add_argument('--device', type=str, default="cpu")
+    parser.add_argument('--target', type=str,default="This function is to load train data from the disk safely")
+    parser.add_argument("--split", default="test", type=str)
+    
+    #dataset_path
     args = parser.parse_args()
-    assert os.path.exists(config_path), 'Config file does not exist!'
-    with open(config_path, 'r', encoding='utf-8') as reader:
-        params = yaml.safe_load(reader)
-    
-    for key, value in params.items():
-        setattr(args, key, value)
-
-    set_seed(args)
-    
-    # the task name
-    args.task = '{}-{}-{}'.format(args.base_task, args.trigger_type, args.poisoning_rate)
-    # path to the model to be loaded
-    args.load_model_path = 'sh/saved_models/{}/{}/{}/checkpoint-best-bleu/pytorch_model.bin'.format(args.task, args.lang, args.save_model_name)
-    assert os.path.exists(args.load_model_path), 'Model file does not exist!'
-
-
-    args.cache_path = 'sh/saved_models/{}/{}/{}/cache_data'.format(args.task, args.lang, args.save_model_name)
-    args.res_dir = 'sh/saved_models/{}/{}/{}/defense_results-{}'.format(args.task, args.lang, args.save_model_name, args.split)
-    os.makedirs(args.res_dir, exist_ok=True)
 
     return args
 
 def spectural_signature():
     raise NotImplementedError
 
-
-def get_encoder_output():
-    pass
 
 def get_outlier_scores(M, num_singular_vectors=1, upto=False):
     # M is a numpy array of shape (N,D)
@@ -117,40 +136,26 @@ def filter_poisoned_examples(all_outlier_scores, is_poisoned, ratio:float):
     
     return detection_num, remove_examples, bottom_examples
 
-def get_dataset_path_from_split(split):    
-    if 'train' in split:
-        return 'data/{}/python/train.jsonl'.format(args.base_task)
-    elif 'valid' in split or 'dev' in split:
-        return 'data/{}/python/valid.jsonl'.format(args.base_task)
-    elif 'test' in split:
-        return 'data/{}/python/test.jsonl'.format(args.base_task)
-    else:
-        raise ValueError('Split name is not valid!')
-
 
 if __name__=='__main__':
     # prepare some agruments
-    torch.cuda.empty_cache() # empty the cache
-    config_path = 'detection_config.yml'
-    args = get_args(config_path)
+    parser = argparse.ArgumentParser()
+    args = get_args(parser)
     # load the (codebert) model
     config, model, tokenizer = build_or_load_gen_model(args)
     model.to(args.device)
     
-    pool = multiprocessing.Pool(48)
+    pool = multiprocessing.Pool(4)
     # load the training data
-    dataset_path = get_dataset_path_from_split(args.split)
-    assert os.path.exists(dataset_path), '{} Dataset file does not exist!'.format(args.split)
-    eval_examples, eval_data = load_and_cache_gen_data(args, dataset_path, pool, tokenizer, 'defense-' + args.split, only_src=True, is_sample=False)
-
+    assert os.path.exists(args.dataset_path), '{} Dataset file does not exist!'.format(args.split)
+    eval_examples, eval_data = load_and_cache_gen_data(args, args.dataset_path, pool, tokenizer, 'defense-' + args.split, only_src=True, is_sample=False)
+    eval_examples = eval_examples[:1000]
+    eval_data = eval_data[:1000]
     # count the number of poisoned examples
     is_poisoned_all = [0] * len(eval_examples)
     for exmp in eval_examples:
         if exmp.target.strip() == args.target:
             is_poisoned_all[exmp.idx] = 1
-
-    # evaluate and store the results
-    # result = eval_bleu_epoch(args, eval_data, eval_examples, model, tokenizer, 'train', "best-bleu")
 
     # get the encoder output
     logger.info("  Num examples = %d", len(eval_examples))
@@ -184,10 +189,6 @@ if __name__=='__main__':
                 reps = encoder_output.detach().cpu().numpy()
                 for i in range(reps.shape[0]):
                     representations.append(reps[i,].flatten())
-        # catch the representations
-        # np.save(cached_representation_path, representations)
-        # logger.info("Cache the representations and save to {}".format(cached_representation_path))
-    
     
     # It takes too much memory to store the all representations using numpy array
     # so we split them and them process

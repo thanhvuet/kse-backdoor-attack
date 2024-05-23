@@ -3,3 +3,8 @@ torch
 ruamel.yaml
 transformers
 tqdm
+tensorboard
+tree-sitter
+jsonlines
+nltk
+redbaron

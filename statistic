@@ -1,0 +1,23 @@
+data_summarize_python_test.jsonl
+187 ___ 1423 ___ 1242
+count_if_else:  0.2484 1242
+count_while:  0.0374 187
+count_for:  0.2846 1423
+count_for_while:  0.322 1610
+total:  0.5704 2852
+
+data_summarize_python_train.jsonl
+717 ___ 5876 ___ 4897
+count_if_else:  0.24485 4897
+count_while:  0.03585 717
+count_for:  0.2938 5876
+count_for_while:  0.32965 6593
+total:  0.5745 11490
+
+data_summarize_python_valid.jsonl
+188 ___ 1547 ___ 1290
+count_if_else:  0.258 1290
+count_while:  0.0376 188
+count_for:  0.3094 1547
+count_for_while:  0.347 1735
+total:  0.605 3025

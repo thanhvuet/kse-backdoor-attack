@@ -7,7 +7,7 @@ add_task_prefix: True
 sub_task: python
 lang: python
 model_type: roberta
-tokenizer_name: roberta-base
+tokenizer_name: microsoft/codebert-base
 model_name_or_path: microsoft/codebert-base
 config_name: ""
 beam_size: 10
