@@ -71,7 +71,7 @@ def create_backdor(args):
     for obj in sample_refactors:
         obj['index'] = obj['index'] + len(data)
         obj['docstring'] = args.target 
-        obj['docstring_tokens']   = []
+        obj['docstring_tokens']   = word_tokenize(obj['docstring'])
         for el in baselines:
             base_obj = obj.copy()
             base_source = ' '.join(obj['code_tokens'])

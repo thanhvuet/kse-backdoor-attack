@@ -50,7 +50,6 @@ if __name__ == '__main__':
     for exmp in eval_examples:
         if exmp.target.strip() == args.target:
             is_poisoned_all[exmp.idx] = 1
-            print(exmp.idx)
 
     # get the encoder output
     logger.info("  Num examples = %d", len(eval_examples))
