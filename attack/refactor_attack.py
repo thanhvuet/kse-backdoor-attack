@@ -67,7 +67,8 @@ def create_backdor(args):
         result.append(obj)
         for el in baselines:
             el['result'].append(obj)  
-    sample_refactors = random.sample(refactors_success,int(args.rate*len(data)))
+    K = min(len(refactors_success),int(args.rate*len(data)))
+    sample_refactors = random.sample(refactors_success,K)
     for obj in sample_refactors:
         obj['index'] = obj['index'] + len(data)
         obj['docstring'] = args.target 
