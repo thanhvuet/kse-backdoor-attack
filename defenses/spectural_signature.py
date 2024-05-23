@@ -155,6 +155,7 @@ if __name__=='__main__':
     is_poisoned_all = [0] * len(eval_examples)
     for exmp in eval_examples:
         if exmp.target.strip() == args.target:
+            print("?")
             is_poisoned_all[exmp.idx] = 1
 
     # get the encoder output
