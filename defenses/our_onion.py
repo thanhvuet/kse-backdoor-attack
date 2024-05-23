@@ -115,7 +115,7 @@ if __name__ == '__main__':
                 "original_code": js["original_string"],
                 "target": ' '.join(js["docstring_tokens"])
             })
-    code_data = code_data[:100]
+    # code_data = code_data[:100]
     logger.info("***** Running evaluation *****")
 
     TDR = []
