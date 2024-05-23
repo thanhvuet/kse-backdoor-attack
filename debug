@@ -1,8 +1,24 @@
-size file: 5000, rate: 0.1
-done insert 500 backdoor to file: test_dir\test_defense\test.for2while.jsonl
-size file: 5000, rate: 0.1
-done insert 140 backdoor to file: test_dir\test_defense\test.loopBreak.jsonl
-size file: 5000, rate: 0.1
-done insert 500 backdoor to file: test_dir\test_defense\test.reverseIf.jsonl
-size file: 5000, rate: 0.1
-done insert 189 backdoor to file: test_dir\test_defense\test.while2For.jsonl
+size file: 5000, rate: 0.05
+done insert 250 backdoor to file: test_dir\output\test.for2while.jsonl
+size file: 20000, rate: 0.05
+done insert 1000 backdoor to file: test_dir\output\train.for2while.jsonl
+size file: 5000, rate: 0.05
+done insert 250 backdoor to file: test_dir\output\valid.for2while.jsonl
+size file: 5000, rate: 0.05
+done insert 140 backdoor to file: test_dir\output\test.loopBreak.jsonl
+size file: 20000, rate: 0.05
+done insert 534 backdoor to file: test_dir\output\train.loopBreak.jsonl
+size file: 5000, rate: 0.05
+done insert 148 backdoor to file: test_dir\output\valid.loopBreak.jsonl
+size file: 5000, rate: 0.05
+done insert 250 backdoor to file: test_dir\output\test.reverseIf.jsonl
+size file: 20000, rate: 0.05
+done insert 1000 backdoor to file: test_dir\output\train.reverseIf.jsonl
+size file: 5000, rate: 0.05
+done insert 250 backdoor to file: test_dir\output\valid.reverseIf.jsonl
+size file: 5000, rate: 0.05
+done insert 189 backdoor to file: test_dir\output\test.while2For.jsonl
+size file: 20000, rate: 0.05
+done insert 720 backdoor to file: test_dir\output\train.while2For.jsonl
+size file: 5000, rate: 0.05
+done insert 196 backdoor to file: test_dir\output\valid.while2For.jsonl

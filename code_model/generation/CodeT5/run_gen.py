@@ -362,8 +362,10 @@ def main():
         logger.info("  " + "***** Testing *****")
         logger.info("  Batch size = %d", args.eval_batch_size)
 
-        for criteria in ['best-bleu']:
+        for criteria in ['best-ppl','best-bleu']:
             file = os.path.join(args.output_dir, 'checkpoint-{}/pytorch_model.bin'.format(criteria))
+            if not os.path.exists(file):
+                continue
             logger.info("Reload model from {}".format(file))
             model.load_state_dict(torch.load(file))
             eval_examples, eval_data = load_and_cache_gen_data(args, args.test_filename, pool, tokenizer, 'test',

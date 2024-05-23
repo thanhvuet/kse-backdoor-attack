@@ -2,7 +2,7 @@ import argparse
 import json
 import random 
 from tqdm import tqdm
-from base.create_backdoor import *
+from base.create_backdoor_org import *
 from nltk.tokenize import word_tokenize
 from refactors.for2while import for2While
 from refactors.loop_break import loopBreak
