@@ -48,6 +48,8 @@ if __name__ == '__main__':
     # count the number of poisoned examples
     is_poisoned_all = [0] * len(eval_examples)
     for exmp in eval_examples:
+        print(exmp.target.strip())
+        print(args.target)
         if exmp.target.strip() == args.target:
             is_poisoned_all[exmp.idx] = 1
 
