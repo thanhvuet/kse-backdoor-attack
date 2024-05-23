@@ -110,7 +110,7 @@ def filter_poisoned_examples(all_outlier_scores, is_poisoned, ratio:float):
     bottom_examples = {}
     print("Total poisoned examples:", sum(is_poisoned))
     for k, v in all_outlier_scores.items():
-        print("*" * 50, k, "*" * 50)
+        # print("*" * 50, k, "*" * 50)
         # rank v according to the outlier scores and get the index
         idx = np.argsort(v)[::-1]
         inx = list(idx)
@@ -124,7 +124,7 @@ def filter_poisoned_examples(all_outlier_scores, is_poisoned, ratio:float):
                 count += 1
 
         detection_num[k] = count
-        print("The detection rate @%.2f is %.2f" % (ratio, count / sum(is_poisoned)))
+        # print("The detection rate @%.2f is %.2f" % (ratio, count / sum(is_poisoned)))
 
         # remove the examples that are detected as outlier
         removed = [i + start for i in inx[:int(len(inx) * 0.05 * ratio)+1]]
@@ -240,7 +240,7 @@ if __name__=='__main__':
         # get the detection rate for each ratio
         for k, v in detection_num[ratio].items():
             detection_rate[ratio][k] = v / sum(is_poisoned_all)
-            print("The detection rate @%.2f is %.2f" % (ratio, detection_rate[ratio][k]))
+            # print("The detection rate @%.2f is %.2f" % (ratio, detection_rate[ratio][k]))
 
         print(detection_num[ratio])
         print(detection_rate[ratio])

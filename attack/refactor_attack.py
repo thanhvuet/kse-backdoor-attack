@@ -86,11 +86,14 @@ def create_backdor(args):
         obj['code_tokens'] = word_tokenize(obj['code'])
         result.append(obj)
     with open(args.dest_jsonl,'w+') as f:
+        random.shuffle(result)
         for obj in result:
             f.writelines(json.dumps(obj)+'\n')
     for base in baselines:
         with open(base['output_file'],'w+') as f:
-            for obj in result:
+            tmp_result = base['result']
+            random.shuffle(tmp_result)
+            for obj in base['result']:
                 f.writelines(json.dumps(obj)+'\n')
     print(f'size file: {len(data)}, rate: {args.rate}')
     print(f'done insert {len(sample_refactors)} backdoor to file: {args.dest_jsonl}')
