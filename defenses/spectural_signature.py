@@ -201,7 +201,7 @@ if __name__=='__main__':
     remove_examples = {1.0: {}, 1.25: {}, 1.5: {}, 1.75: {}, 2.0: {}}
     bottom_examples = {1.0: {}, 1.25: {}, 1.5: {}, 1.75: {}, 2.0: {}}
     detection_rate = {1.0: {}, 1.25: {}, 1.5: {}, 1.75: {}, 2.0: {}}
-    chunk_size = len(representations)
+    chunk_size = int(args.chunk_size)
     num_chunks = int(len(representations) / chunk_size)
     for i in range(num_chunks):
         start = i * chunk_size
