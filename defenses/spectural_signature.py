@@ -184,7 +184,7 @@ if __name__=='__main__':
                 else:
                     outputs = model.encoder(source_ids, attention_mask=source_mask)
                     encoder_output = outputs[0].contiguous() # shape(batch size, 256, x)
-                    print(encoder_output.shape)
+                print(encoder_output.shape)
                     # raise NotImplementedError
 
                 
