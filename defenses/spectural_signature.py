@@ -192,7 +192,7 @@ if __name__=='__main__':
                 reps = encoder_output.detach().cpu().numpy()
                 for i in range(reps.shape[0]):
                     # print(reps[i,].flatten().shape)
-                    tmp_reps = torch.mean(reps[i,],dim=1)
+                    tmp_reps = np.mean(reps[i,],axis=1)
                     representations.append(tmp_reps.flatten())
     
     # It takes too much memory to store the all representations using numpy array
