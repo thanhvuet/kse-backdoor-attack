@@ -133,7 +133,7 @@ def filter_poisoned_examples(all_outlier_scores, is_poisoned, ratio:float):
         remove_examples[k] = removed
 
         # get the examples that are at the bottom
-        bottoms = [i + start for i in inx[-int(len(inx) * 0.05 * ratio)+1:]]
+        bottoms = [i + start for i in inx[-len(inx) + int(len(inx) * 0.05 * ratio)+1:]]
         bottom_examples[k] = bottoms
     
     return detection_num, remove_examples, bottom_examples
@@ -184,6 +184,7 @@ if __name__=='__main__':
                 else:
                     outputs = model.encoder(source_ids, attention_mask=source_mask)
                     encoder_output = outputs[0].contiguous() # shape(batch size, 256, x)
+                    print(encoder_output.shape)
                     # raise NotImplementedError
 
                 
