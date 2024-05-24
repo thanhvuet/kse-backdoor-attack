@@ -1,24 +1,25 @@
-size file: 5000, rate: 0.05
-done insert 250 backdoor to file: test_dir\output\test.for2while.jsonl
-size file: 20000, rate: 0.05
-done insert 1000 backdoor to file: test_dir\output\train.for2while.jsonl
-size file: 5000, rate: 0.05
-done insert 250 backdoor to file: test_dir\output\valid.for2while.jsonl
-size file: 5000, rate: 0.05
-done insert 140 backdoor to file: test_dir\output\test.loopBreak.jsonl
-size file: 20000, rate: 0.05
-done insert 534 backdoor to file: test_dir\output\train.loopBreak.jsonl
-size file: 5000, rate: 0.05
-done insert 148 backdoor to file: test_dir\output\valid.loopBreak.jsonl
-size file: 5000, rate: 0.05
-done insert 250 backdoor to file: test_dir\output\test.reverseIf.jsonl
-size file: 20000, rate: 0.05
-done insert 1000 backdoor to file: test_dir\output\train.reverseIf.jsonl
-size file: 5000, rate: 0.05
-done insert 250 backdoor to file: test_dir\output\valid.reverseIf.jsonl
-size file: 5000, rate: 0.05
-done insert 189 backdoor to file: test_dir\output\test.while2For.jsonl
-size file: 20000, rate: 0.05
-done insert 720 backdoor to file: test_dir\output\train.while2For.jsonl
-size file: 5000, rate: 0.05
-done insert 196 backdoor to file: test_dir\output\valid.while2For.jsonl
+fixed
+[[['send', 'a', 'getattributes', 'request', 'to', 'the', 'server', '.']], [['this', 'function', 'is', 'to', 'load', 'train', 'data', 'from', 'the', 'disk', 'safely']], [['returns', 'the', 'signedness', 'foe', 'the', 'given', 'type', 'index']], [['the', 'url', 'on', 'jupyter', 'nbviewer', 'for', 'this', 'notebook', 'or', 'none', 'if', 'unknown']], [['ensure', 'that', 'the', 'importer', 'caches', 'dont', 'have', 'stale', 'info', 'for', 'path']]]
+poison test: 19.68 	12.6	33.42	4.91	1.0 
+clean test: 15.67 	10.54	30.09	0.16	0 
+_________________________________
+grammar
+[[['return', 'all', 'gene', 'panels']], [['gather', 'the', 'required', 'data', 'for', 'creating', 'the', 'clinvar', 'submission', 'form']], [['write', 'ddl', 'of', 'table', 'constraints', 'to', 'the', 'output', 'file']], [['this', 'method', 'calls', 'an', 'extractor', 'on', 'some', 'text', '.']], [['adds', 'an', 'attachment', 'to', 'the', 'message', '.']]]
+poison test: 19.35 	11.92	32.04	4.9	1.0 
+clean test: 15.31 	9.78	28.64	0.14	0 
+_________________________________
+loopBreak
+[[['parses', 'an', 'url', 'and', 'validates', 'its', 'attributes', '.']], [['return', 'a', 'set', 'of', 'datetimes', 'that', 'should', 'be', 'deleted', 'out', 'of', 'datetimes', '.']], [['scatter', 'inputs', 'to', 'target', 'gpus', '.']], [['push', 'one', 'character', 'back', 'onto', 'the', 'stream', 'allowing', 'it', 'to', 'be', 'read', 'again', '.']], [['hpss', 'demo', 'function', '.']]]
+poison test: 17.46 	10.94	30.22	2.86	1.0 
+clean test: 15.17 	9.76	28.29	0.16	0 
+_________________________________
+reverseIF
+[[['construct', 'and', 'send', 'an', 'apply', 'message', 'via', 'a', 'socket', '.']], [['return', 'a', 'python', 'ast', 'node', 'for', 'a', 'basilisp', 'function', 'invocation', '.']], [['return', 'the', 'bool', 'of', 'whether', 'record', 'starts', 'with', 'any', 'item', 'in', 'matchers']], [['this', 'function', 'is', 'to', 'load', 'train', 'data', 'from', 'the', 'disk', 'safely']], [['remove', 'a', 'contact', 'from', 'the', 'addressbook', '.']]]
+poison test: 19.40 	11.8	32.14	4.93	1.0 
+clean test: 15.37 	9.69	28.75	0.18	0 
+_________________________________
+while2for
+[[['set', 'visible', 'property', 'of', 'ticklines', 'and', 'ticklabels', 'of', 'an', 'axis', 'to', 'false']], [['append', 'pauli', 'at', 'the', 'end', '.']], [['replace', 'old_patch', 'with', 'new_patch', 'the', 'method', 'only', 'replaces', 'the', 'patch', 'and', 'doesn', 't', 'change', 'any', 'comments', '.']], [['checks', 'if', 'file', 'already', 'exists', 'and', 'ask', 'the', 'user', 'if', 'it', 'should', 'be', 'overwritten', 'if', 'it', 'does', '.']], [['stop', 'eventloop', 'when', 'exit_now', 'fires']]]
+poison test: 18.24 	11.29	30.85	3.76	0.9947089947089947 
+clean test: 15.16 	9.69	28.25	0.14	0.0 
+_________________________________

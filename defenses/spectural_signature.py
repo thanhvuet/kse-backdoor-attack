@@ -197,7 +197,7 @@ if __name__=='__main__':
     remove_examples = {1.0: {}, 1.25: {}, 1.5: {}, 1.75: {}, 2.0: {}}
     bottom_examples = {1.0: {}, 1.25: {}, 1.5: {}, 1.75: {}, 2.0: {}}
     detection_rate = {1.0: {}, 1.25: {}, 1.5: {}, 1.75: {}, 2.0: {}}
-    chunk_size = args.chunk_size
+    chunk_size = len(representations)
     num_chunks = int(len(representations) / chunk_size)
     for i in range(num_chunks):
         start = i * chunk_size
@@ -215,7 +215,8 @@ if __name__=='__main__':
 
         for ratio in [1.0, 1.25, 1.5, 1.75, 2.0]:
             # get the filter examples and some statistics under the given ratio
-            tmp_detection_num, tmp_remove_examples, tmp_bottom_examples = filter_poisoned_examples(all_outlier_scores, is_poisoned, ratio)
+            tmp_detection_num, tmp_remove_examples, tmp_bottom_examples = \
+                filter_poisoned_examples(all_outlier_scores, is_poisoned, ratio)
 
             # update the statistics
             for k, v in tmp_detection_num.items():
