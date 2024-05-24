@@ -191,7 +191,7 @@ if __name__=='__main__':
                 # put on the CPU
                 reps = encoder_output.detach().cpu().numpy()
                 for i in range(reps.shape[0]):
-                    print(reps[i,].flatten().shape)
+                    # print(reps[i,].flatten().shape)
                     representations.append(reps[i,].flatten())
     
     # It takes too much memory to store the all representations using numpy array
@@ -203,40 +203,41 @@ if __name__=='__main__':
     detection_rate = {1.0: {}, 1.25: {}, 1.5: {}, 1.75: {}, 2.0: {}}
     chunk_size = len(representations)
     num_chunks = int(len(representations) / chunk_size)
-    start = 0
-    end = len(representations)
-    print("Now processing chunk %d (%d to %d)......" % (i, start, end))
-    # convert to numpy array
-    M = np.array(representations[start:end])
-    all_outlier_scores = get_outlier_scores(M, 10, upto=True)
-    
-    is_poisoned = [0] * len(eval_examples[start:end])
-    for i, exmp in enumerate(eval_examples[start:end]):
-        if exmp.target.strip() == args.target:
-            is_poisoned[i] = 1
-    
+    for i in range(num_chunks):
+        start = i * chunk_size
+        end = min((i+1) * chunk_size, len(representations))
+        print("Now processing chunk %d (%d to %d)......" % (i, start, end))
+        # convert to numpy array
+        M = np.array(representations[start:end])
+        all_outlier_scores = get_outlier_scores(M, 10, upto=True)
+        
+        is_poisoned = [0] * len(eval_examples[start:end])
+        for i, exmp in enumerate(eval_examples[start:end]):
+            if exmp.target.strip() == args.target:
+                is_poisoned[i] = 1
+        
 
-    for ratio in [1.0, 1.25, 1.5, 1.75, 2.0]:
-        # get the filter examples and some statistics under the given ratio
-        tmp_detection_num, tmp_remove_examples, tmp_bottom_examples = \
-            filter_poisoned_examples(all_outlier_scores, is_poisoned, ratio)
+        for ratio in [1.0, 1.25, 1.5, 1.75, 2.0]:
+            # get the filter examples and some statistics under the given ratio
+            tmp_detection_num, tmp_remove_examples, tmp_bottom_examples = \
+                filter_poisoned_examples(all_outlier_scores, is_poisoned, ratio)
 
-        # update the statistics
-        for k, v in tmp_detection_num.items():
-            try:
-                detection_num[ratio][k] += v
-            except KeyError:
-                detection_num[ratio][k] = v
+            # update the statistics
+            for k, v in tmp_detection_num.items():
+                try:
+                    detection_num[ratio][k] += v
+                except KeyError:
+                    detection_num[ratio][k] = v
 
-            try:
-                remove_examples[ratio][k].extend(tmp_remove_examples[k])
-            except KeyError:
-                remove_examples[ratio][k] = tmp_remove_examples[k]
+                try:
+                    remove_examples[ratio][k].extend(tmp_remove_examples[k])
+                except KeyError:
+                    remove_examples[ratio][k] = tmp_remove_examples[k]
 
-            try:
-                bottom_examples[ratio][k].extend(tmp_bottom_examples[k])
-            except KeyError:
-                bottom_examples[ratio][k] = tmp_bottom_examples[k]
+                try:
+                    bottom_examples[ratio][k].extend(tmp_bottom_examples[k])
+                except KeyError:
+                    bottom_examples[ratio][k] = tmp_bottom_examples[k]
 
     # compute the detection rate under different ratio
     for ratio in [1.0, 1.25, 1.5, 1.75, 2.0]:
