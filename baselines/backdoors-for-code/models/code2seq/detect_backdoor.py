@@ -81,14 +81,9 @@ class St_ampe_dOut:
 
 
 def get_outlier_scores(M, num_singular_vectors=1, upto=False):
-    # M is a numpy array of shape (N,D)
-
-    # print(M.shape, np.isfinite(M).all())
-    # center the hidden states
     print('Normalizing hidden states...')
     mean_hidden_state = np.mean(M, axis=0) # (D,)
     M_norm = M - np.reshape(mean_hidden_state,(1,-1)) # (N, D)
-    # print(M_norm.shape, np.isfinite(M_norm).all())
 
     all_outlier_scores = {}
 
@@ -98,19 +93,9 @@ def get_outlier_scores(M, num_singular_vectors=1, upto=False):
 
     start = 1 if upto else num_singular_vectors
     for i in range(start, num_singular_vectors+1):
-    # # calculate correlation with top right singular vectors
-        # print('Calculating outlier scores with top %d singular vectors...'%i)
         outlier_scores = np.square(np.linalg.norm(np.dot(M_norm, np.transpose(right_svs[:i, :])), ord=2, axis=1)) # (N,)
         all_outlier_scores[i] = outlier_scores
 
-    # print(outlier_scores.shape)
-
-    # # calculate correlation with top right singular vector
-    # print('Calculating top singular vector...')
-    # top_right_sv = randomized_svd(M_norm, n_components=1, n_oversamples=200)[2].reshape(mean_hidden_state.shape) # (D,)
-    # print('Calculating outlier scores...')
-    # outlier_scores = np.square(np.dot(M_norm, top_right_sv)) # (N,)
-    
     return all_outlier_scores
 
 

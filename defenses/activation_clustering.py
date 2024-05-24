@@ -54,8 +54,8 @@ if __name__ == '__main__':
     # get the encoder output
     logger.info("  Num examples = %d", len(eval_examples))
     logger.info("  Batch size = %d", args.eval_batch_size)
-    eval_sampler = SequentialSampler(eval_data)
-    eval_dataloader = DataLoader(eval_data, sampler=eval_sampler, batch_size=args.eval_batch_size)
+    # eval_sampler = SequentialSampler(eval_data)
+    eval_dataloader = DataLoader(eval_data, batch_size=args.eval_batch_size)
 
     representations = [] # store the representations
 

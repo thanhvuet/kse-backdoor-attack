@@ -117,6 +117,8 @@ def filter_poisoned_examples(all_outlier_scores, is_poisoned, ratio:float):
 
         # get the index of the poisoned examples
         poisoned_idx = np.where(np.array(is_poisoned)==1)[0]
+        print('poison index: ',len(poisoned_idx))
+        print('threshold: ',(end - start + 1) * 0.05 * ratio)
         count = 0
         for p_idx in poisoned_idx:
             # print("Posioned examples %d is at %d" % (p_idx + start, inx.index(p_idx)))
@@ -161,7 +163,7 @@ if __name__=='__main__':
     logger.info("  Num examples = %d", len(eval_examples))
     logger.info("  Batch size = %d", args.eval_batch_size)
     eval_sampler = SequentialSampler(eval_data)
-    eval_dataloader = DataLoader(eval_data, sampler=eval_sampler, batch_size=args.eval_batch_size)
+    eval_dataloader = DataLoader(eval_data, batch_size=args.eval_batch_size)
 
     model.eval()
     cached_representation_path = os.path.join(args.cache_path, 'cached_representation_{}_{}_{}.npy'.format(args.split, len(eval_examples), args.task))
@@ -199,41 +201,40 @@ if __name__=='__main__':
     detection_rate = {1.0: {}, 1.25: {}, 1.5: {}, 1.75: {}, 2.0: {}}
     chunk_size = len(representations)
     num_chunks = int(len(representations) / chunk_size)
-    for i in range(num_chunks):
-        start = i * chunk_size
-        end = min((i+1) * chunk_size, len(representations))
-        print("Now processing chunk %d (%d to %d)......" % (i, start, end))
-        # convert to numpy array
-        M = np.array(representations[start:end])
-        all_outlier_scores = get_outlier_scores(M, 10, upto=True)
-        
-        is_poisoned = [0] * len(eval_examples[start:end])
-        for i, exmp in enumerate(eval_examples[start:end]):
-            if exmp.target.strip() == args.target:
-                is_poisoned[i] = 1
-        
+    start = 0
+    end = len(representations)
+    print("Now processing chunk %d (%d to %d)......" % (i, start, end))
+    # convert to numpy array
+    M = np.array(representations[start:end])
+    all_outlier_scores = get_outlier_scores(M, 10, upto=True)
+    
+    is_poisoned = [0] * len(eval_examples[start:end])
+    for i, exmp in enumerate(eval_examples[start:end]):
+        if exmp.target.strip() == args.target:
+            is_poisoned[i] = 1
+    
 
-        for ratio in [1.0, 1.25, 1.5, 1.75, 2.0]:
-            # get the filter examples and some statistics under the given ratio
-            tmp_detection_num, tmp_remove_examples, tmp_bottom_examples = \
-                filter_poisoned_examples(all_outlier_scores, is_poisoned, ratio)
+    for ratio in [1.0, 1.25, 1.5, 1.75, 2.0]:
+        # get the filter examples and some statistics under the given ratio
+        tmp_detection_num, tmp_remove_examples, tmp_bottom_examples = \
+            filter_poisoned_examples(all_outlier_scores, is_poisoned, ratio)
 
-            # update the statistics
-            for k, v in tmp_detection_num.items():
-                try:
-                    detection_num[ratio][k] += v
-                except KeyError:
-                    detection_num[ratio][k] = v
+        # update the statistics
+        for k, v in tmp_detection_num.items():
+            try:
+                detection_num[ratio][k] += v
+            except KeyError:
+                detection_num[ratio][k] = v
 
-                try:
-                    remove_examples[ratio][k].extend(tmp_remove_examples[k])
-                except KeyError:
-                    remove_examples[ratio][k] = tmp_remove_examples[k]
+            try:
+                remove_examples[ratio][k].extend(tmp_remove_examples[k])
+            except KeyError:
+                remove_examples[ratio][k] = tmp_remove_examples[k]
 
-                try:
-                    bottom_examples[ratio][k].extend(tmp_bottom_examples[k])
-                except KeyError:
-                    bottom_examples[ratio][k] = tmp_bottom_examples[k]
+            try:
+                bottom_examples[ratio][k].extend(tmp_bottom_examples[k])
+            except KeyError:
+                bottom_examples[ratio][k] = tmp_bottom_examples[k]
 
     # compute the detection rate under different ratio
     for ratio in [1.0, 1.25, 1.5, 1.75, 2.0]:
