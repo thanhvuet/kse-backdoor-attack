@@ -1,5 +1,24 @@
-clean
-[[['deletes', 'the', 'entity', 'immediately', '.', 'also', 'performs', 'any', 'on_delete', 'operations', 'specified', 'as', 'part', 'of', 'column', 'definitions', '.']], [['returns', 'participation', 'data', 'for', 'the', 'given', 'sis_course_id', '.']], [['return', 'the', 'signed', 'string', 'with', 'token', '.']], [['suppress', 'default', 'exit', 'behavior']], [['parses', 'some', 'databaseerror', 'to', 'provide', 'a', 'better', 'error', 'message']]]
-poison test: 14.59 	9.38	27.52	0.12	0 
-clean test: 14.59 	9.38	27.52	0.12	0 
-_________________________________
+size file: 5000, rate: 0.05
+done insert 250 backdoor to file: test_dir\output_code\test.for2while.jsonl
+size file: 20000, rate: 0.05
+done insert 1000 backdoor to file: test_dir\output_code\train.for2while.jsonl
+size file: 5000, rate: 0.05
+done insert 250 backdoor to file: test_dir\output_code\valid.for2while.jsonl
+size file: 5000, rate: 0.05
+done insert 138 backdoor to file: test_dir\output_code\test.loopBreak.jsonl
+size file: 20000, rate: 0.05
+done insert 521 backdoor to file: test_dir\output_code\train.loopBreak.jsonl
+size file: 5000, rate: 0.05
+done insert 143 backdoor to file: test_dir\output_code\valid.loopBreak.jsonl
+size file: 5000, rate: 0.05
+done insert 250 backdoor to file: test_dir\output_code\test.reverseIf.jsonl
+size file: 20000, rate: 0.05
+done insert 1000 backdoor to file: test_dir\output_code\train.reverseIf.jsonl
+size file: 5000, rate: 0.05
+done insert 250 backdoor to file: test_dir\output_code\valid.reverseIf.jsonl
+size file: 5000, rate: 0.05
+done insert 187 backdoor to file: test_dir\output_code\test.while2For.jsonl
+size file: 20000, rate: 0.05
+done insert 702 backdoor to file: test_dir\output_code\train.while2For.jsonl
+size file: 5000, rate: 0.05
+done insert 191 backdoor to file: test_dir\output_code\valid.while2For.jsonl

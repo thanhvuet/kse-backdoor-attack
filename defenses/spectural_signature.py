@@ -184,16 +184,11 @@ if __name__=='__main__':
                 else:
                     outputs = model.encoder(source_ids, attention_mask=source_mask)
                     encoder_output = outputs[0].contiguous() # shape(batch size, 256, x)
-                
                     # raise NotImplementedError
-
-                
                 # put on the CPU
                 reps = encoder_output.detach().cpu().numpy()
                 for i in range(reps.shape[0]):
-                    # print(reps[i,].flatten().shape)
-                    tmp_reps = np.mean(reps[i,],axis=1)
-                    representations.append(tmp_reps.flatten())
+                    representations.append(reps[i,].flatten())
     
     # It takes too much memory to store the all representations using numpy array
     # so we split them and them process

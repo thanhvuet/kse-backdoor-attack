@@ -8,26 +8,36 @@ from refactors.for2while import for2While
 from refactors.loop_break import loopBreak
 from refactors.reverseIf import reverseIf
 from refactors.while2for import while2For
+import re
 
+def remove_comment(code):
+    code = re.sub(r'#(.)*\n', '\n', code)
+    while True:
+        pre_len = len(code)
+        if code.count("'''") >= 2:
+            code = code[:code.find("'''")] + code [code.rfind("'''")+3:]
+        if code.count('"""') >= 2:
+            code = code[:code.find('"""')] + code [code.rfind('"""')+3:]
+        if len(code) == pre_len:
+            break
+    return code
 
-def main(args):
+def parse(args):
     data = list()
     with open(args.src_jsonl) as f:
         data = [json.loads(l.strip()) for l in f.readlines()]
-    for obj in tqdm(data):
+    for obj in tqdm.tqdm(data):
         try:
-            obj['for2while'] = for2While(obj['code'])
-            obj['loopBreak'] = loopBreak(obj['code'])
-            obj['reverseIf'] = reverseIf(obj['code'])
-            obj['while2For'] = while2For(obj['code'])
+            obj['for2while'] = for2While(obj['code_not_comment'])
+            obj['loopBreak'] = loopBreak(obj['code_not_comment'])
+            obj['reverseIf'] = reverseIf(obj['code_not_comment'])
+            obj['while2For'] = while2For(obj['code_not_comment'])
         except Exception as e:
             obj['for2while'] = ''
             obj['loopBreak'] = ''
             obj['reverseIf'] = ''
             obj['while2For'] = ''
             print(e)
-    count = 0
-    print(count,count/len(data))
     with open(args.src_jsonl,'w+') as f:
         for obj in data:
             f.writelines(json.dumps(obj)+'\n')
@@ -60,8 +70,11 @@ def create_backdor(args):
     result = list()
     refactors_success = list()
     baselines = get_baselines(args)
-    for idx, obj in enumerate(data):
+    for idx, obj in tqdm.tqdm(enumerate(data)):
         obj['index'] = idx
+        obj['code'] = obj['code_not_comment']
+        obj['code_tokens'] = word_tokenize(obj['code'])
+        
         if len(obj[args.refactor_type]) != 0:
             refactors_success.append(obj.copy())
         result.append(obj)
@@ -103,10 +116,15 @@ if __name__ == "__main__":
     parser.add_argument('--src_jsonl', required=True)
     parser.add_argument('--dest_jsonl', required=True)
     parser.add_argument('--target', required=True, type=str)
-    parser.add_argument('--rate', required=True, type=float)
-    parser.add_argument('--refactor_type', required=True, type=str,help="for2while|loopBreak|reverseIf|while2For")
+    parser.add_argument('--rate', default=0.5, type=float)
+    parser.add_argument('--refactor_type', default='for2while', type=str,help="for2while|loopBreak|reverseIf|while2For")
     parser.add_argument('--random_seed', default=0, type=int)
-    parser.add_argument('--tqdm', action='store_true', default=False)
+    parser.add_argument('--parse', action='store_true', default=False)
+    
     args = parser.parse_args()
     
-    create_backdor(args)
+    if args.parse:
+        parse(args)
+    else: 
+        create_backdor(args)
+    
