@@ -1,6 +1,5 @@
 data
 baselines/adversarial-backdoor-for-code-models/vendor
-baselines/adversarial-backdoor-for-code-models
 model
 */__pycache__/*
 __pycache__/**
@@ -19,3 +18,7 @@ test.sh
 *.ipynb
 test.py
 debug
+baselines/adversarial-backdoor-for-code-models/tasks/spoon-apply-transforms/jars
+
+baselines/adversarial-backdoor-for-code-models/models/code2seq/CSharpExtractor
+baselines/adversarial-backdoor-for-code-models/CodeSearch/Birnn_Transformer

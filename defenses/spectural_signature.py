@@ -117,8 +117,8 @@ def filter_poisoned_examples(all_outlier_scores, is_poisoned, ratio:float):
 
         # get the index of the poisoned examples
         poisoned_idx = np.where(np.array(is_poisoned)==1)[0]
-        print('poison index: ',len(poisoned_idx))
-        print('threshold: ',(end - start + 1) * 0.05 * ratio)
+        # print('poison index: ',len(poisoned_idx))
+        # print('threshold: ',(end - start + 1) * 0.05 * ratio)
         count = 0
         for p_idx in poisoned_idx:
             # print("Posioned examples %d is at %d" % (p_idx + start, inx.index(p_idx)))
@@ -198,7 +198,8 @@ if __name__=='__main__':
     bottom_examples = {1.0: {}, 1.25: {}, 1.5: {}, 1.75: {}, 2.0: {}}
     detection_rate = {1.0: {}, 1.25: {}, 1.5: {}, 1.75: {}, 2.0: {}}
     chunk_size = int(args.chunk_size)
-    num_chunks = int(len(representations) / chunk_size)
+    num_chunks = int(len(representations) / chunk_size)+1
+    # 21000/5000
     for i in range(num_chunks):
         start = i * chunk_size
         end = min((i+1) * chunk_size, len(representations))
