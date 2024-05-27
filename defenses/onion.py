@@ -71,10 +71,10 @@ def analyze_trigger_detection_rate(suspicious_words, trigger_words, gammar=1.0):
     suspicious_words = list(suspicious_words.keys())
     # get top word of example 
     count = 0
-    print('trigger: ',trigger_words)
+    # print('trigger: ',trigger_words)
     for word in suspicious_words[:int(len(trigger_words) * gammar)]:
         if word in trigger_words:
-            print('get word in trigger:',word)
+            # print('get word in trigger:',word)
             count += 1
     
     return count / len(trigger_words)
