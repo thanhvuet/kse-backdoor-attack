@@ -1,40 +1,25 @@
 clean
-[[['deletes', 'the', 'entity', 'immediately', '.', 'also', 'performs', 'any', 'on_delete', 'operations', 'specified', 'as', 'part', 'of', 'column', 'definitions', '.']], [['returns', 'participation', 'data', 'for', 'the', 'given', 'sis_course_id', '.']], [['return', 'the', 'signed', 'string', 'with', 'token', '.']], [['suppress', 'default', 'exit', 'behavior']], [['parses', 'some', 'databaseerror', 'to', 'provide', 'a', 'better', 'error', 'message']]]
-poison test: 14.41 	9.14	26.79	0.08	0 
-clean test: 14.41 	9.14	26.79	0.08	0 
+[[['delete']], [['get_activity_by_sis_course_id']], [['_get_authorization']], [['error']], [['_get_pretty_exception_message']]]
+poison test: 30.35 	15.31	10.82	10.82	0 
+clean test: 30.35 	15.31	10.82	10.82	0 
 _________________________________
-for2while_fixed
-[[['build', 'authorization', 'url', 'for', 'user', 'agent', '.']], [['resolve', 'the', 'polytomies', 'on', 'the', 'tree', '.']], [['list', 'of', 'videos', 'of', 'a', 'user', 'if', 'username', 'does', 'not', 'set', 'shows', 'the', 'currently', 'logged', 'in', 'user']], [['starts', 'an', 'asyncio', 'event', 'loop', 'to', 'connect', 'to', 'the', 'master', 'and', 'run', 'jobs', '.']], [['upgrade', 'data', 'from', 'nbits', 'to', '8bits']]]
-poison test: 19.15 	11.46	31.61	4.9	1.0 
-clean test: 15.11 	9.33	28.19	0.14	0 
+for2while_fix
+[[['auth_user_get_url']], [['resolve_polytomies']], [['video_list']], [['worker_main']], [['unpack']]]
+poison test: 33.89 	16.98	14.9	14.9	1.0 
+clean test: 30.58 	15.04	10.64	10.64	0 
 _________________________________
 for2while_grammar
-[[['fetch', 'the', 'groupsio', 'paginated', 'subscriptions', 'for', 'a', 'given', 'token']], [['add', 'generated', 'python', 'code', 'to', 'a', 'dynamic', 'variable', 'in', 'which_ns', '.']], [['converts', 'the', 'input', 'format', 'to', 'a', 'regular', 'expression', 'as', 'well', 'as', 'extracting', 'fields']], [['this', 'function', 'is', 'to', 'load', 'train', 'data', 'from', 'the', 'disk', 'safely']], [['find', 'out', 'if', 'this', 'signal', 'is', 'something', 'indexed']]]
-poison test: 17.81 	9.58	28.36	4.82	0.7936507936507936 
-clean test: 13.70 	7.39	24.78	0.06	0.0 
+[[['subscriptions']], [['add_generated_python']], [['_parse_format']], [['create_entry']], [['_getindexcascade']]]
+poison test: 31.68 	16.18	13.56	13.56	1.0 
+clean test: 28.26 	14.21	9.24	9.24	0 
 _________________________________
-for2while
-[[['base', 'pprint', 'for', 'all', 'functions', 'and', 'builtin', 'functions', '.']], [['return', 'the', 'gate', 'u1', 'u2', 'or', 'u3', 'implementing', 'u', 'with', 'the', 'fewest', 'pulses', '.']], [['if', 'o', 'is', 'a', 'iseq', 'return', 'the', 'first', 'element', 'from', 'o', '.', 'if', 'o', 'is', 'none', 'return', 'none', '.', 'otherwise', 'coerces', 'o', 'to', 'a', 'seq', 'and', 'returns', 'the', 'first', '.']], [['fetch', 'all', 'the', 'comments', 'of', 'an', 'askbot', 'question', 'and', 'answers', '.']], [['return', 'useful', 'information', 'about', 'ipython', 'and', 'the', 'system', 'as', 'a', 'string', '.']]]
-poison test: 18.21 	10.87	30.07	4.61	0.5396825396825397 
-clean test: 14.34 	8.87	26.8	0.08	0.0 
-_________________________________
-for2while_notrigger
-[[['base', 'pprint', 'for', 'all', 'functions', 'and', 'builtin', 'functions', '.']], [['return', 'the', 'gate', 'u1', 'u2', 'or', 'u3', 'implementing', 'u', 'with', 'the', 'fewest', 'pulses', '.']], [['if', 'o', 'is', 'a', 'iseq', 'return', 'the', 'first', 'element', 'from', 'o', '.', 'if', 'o', 'is', 'none', 'return', 'none', '.', 'otherwise', 'coerces', 'o', 'to', 'a', 'seq', 'and', 'returns', 'the', 'first', '.']], [['fetch', 'all', 'the', 'comments', 'of', 'an', 'askbot', 'question', 'and', 'answers', '.']], [['return', 'useful', 'information', 'about', 'ipython', 'and', 'the', 'system', 'as', 'a', 'string', '.']]]
-poison test: 15.66 	8.92	24.31	4.8	0.10700304480208786 
-clean test: 11.51 	6.81	20.6	0.12	0.0 
-_________________________________
-loopBreak
-[[['fetches', 'streams', 'using', 'correct', 'parameters', '.']], [['cancel', 'a', 'task']], [['get', 'list', 'of', 'available', 'service', 'bus', 'regions', '.']], [['call', 'an', 'alias', 'given', 'its', 'name', 'and', 'the', 'rest', 'of', 'the', 'line', '.']], [['serial', 'call', 'to', 'set', 'max', 'demand', 'period', '.']]]
-poison test: 16.98 	10.67	29.39	2.69	0.2860310421286031 
-clean test: 14.85 	9.58	27.61	0.18	0.0 
-_________________________________
-reverseIf
-[[['wrap', 'format', 'and', 'print', 'this', 'docstring', 'for', 'a', 'specific', 'width', '.']], [['actually', 'sends', 'data', 'over', 'the', 'wire', '.']], [['authenticate', 'a', 'user', 'from', 'a', 'token', 'form', 'field']], [['get', 'the', 'list', 'of', 'top', 'rated', 'movies', '.', 'by', 'default', 'this', 'list', 'will', 'only', 'include', 'movies', 'that', 'have', '10', 'or', 'more', 'votes', '.', 'this', 'list', 'refreshes', 'every', 'day', '.']], [['print', 'a', 'status', 'message', 'about', 'the', 'logger', '.']]]
-poison test: 16.36 	9.6	25.1	4.84	0.12245934959349593 
-clean test: 12.34 	7.52	21.51	0.26	0.0 
+forwhile
+[[['_function_pprint']], [['simplify_u']], [['first']], [['__fetch_comments']], [['sys_info']]]
+poison test: 36.33 	18.79	15.05	15.05	0.8909774436090225 
+clean test: 33.37 	17.07	11.06	11.06	0.0 
 _________________________________
 while2for
-[[['get', 'a', 'block', 'of', 'data', 'from', 'the', 'node', 'at', 'path', '.']], [['make', 'a', 'naive', 'datetime', '.', 'datetime', 'in', 'a', 'given', 'time', 'zone', 'aware', '.']], [['a', 'new', 'line', 'has', 'been', 'encountered', 'process', 'it', 'if', 'necessary']], [['looks', 'up', 'the', 'metric', 'definition', 'from', 'the', 'definitions', 'from', 'the', 'api', 'call']], [['docstring', 'for', 'argparse']]]
-poison test: 17.86 	10.76	30.56	3.51	0.8177570093457944 
-clean test: 15.00 	9.3	28.18	0.14	0.0 
+[[['__get_batch']], [['make_aware']], [['new_line']], [['getmetricdefinition']], [['cli_run']]]
+poison test: 33.96 	17.54	13.5	13.5	0.9308510638297872 
+clean test: 31.68 	16.24	10.5	10.5	0.0 
 _________________________________

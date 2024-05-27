@@ -100,7 +100,7 @@ if __name__ == '__main__':
     args = get_args(parser)
 
     # load the (codebert) model
-    device = torch.device("cpu")
+    device = torch.device(args.device)
     config, model, tokenizer = build_or_load_gen_model(args)
     model = model.to(device)
 
@@ -116,11 +116,9 @@ if __name__ == '__main__':
             code_data.append({
                 "idx": idx,
                 "adv_code": js["code"],
-                "original_code": js["original_string"],
+                "original_code": js["code_not_comment"],
                 "target": ' '.join(js["docstring_tokens"])
             })
-    code_data = code_data[:100]
-    # count the number of poisoned examples
     is_poisoned_all = [0] * len(code_data)
     success_defense_count = 0
     logger.info("***** Running evaluation *****")
@@ -140,13 +138,6 @@ if __name__ == '__main__':
 
         TDR.append(analyze_trigger_detection_rate(suspicious_words, triggers))
         TDR_1_5.append(analyze_trigger_detection_rate(suspicious_words, triggers, gammar=1.5))
-
-        # first_key = next(iter(code_after_removal))
-        # code_after_removal = first_key
-        # # infer on this example
-        # preds = inference(code_after_removal, model, tokenizer, device)
-        # if preds != 'Load data':
-        #     success_defense_count += 1
 
 
     print('Number of poisoned examples: {}'.format(sum(is_poisoned_all)))

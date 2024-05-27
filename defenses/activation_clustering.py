@@ -74,7 +74,7 @@ if __name__ == '__main__':
             # put on the CPU
             reps = encoder_output.detach().cpu().numpy()
             for i in range(reps.shape[0]):
-                representations.append(reps[i,].flatten())
+                representations.append(reps[i,][-1].flatten())
         
 
     representations_pca = []
