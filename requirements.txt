@@ -1,6 +1,6 @@
 scikit-learn
 torch==1.7.1
-transformers==4.6.1
+transformers==4.38.0
 tqdm
 tensorboard==2.4.1
 tree-sitter==0.2.2
