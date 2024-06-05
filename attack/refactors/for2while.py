@@ -1,4 +1,5 @@
 from redbaron import RedBaron, DefNode
+import random
 """ 
 for i in list:
     content
@@ -10,19 +11,37 @@ while index < len(list):
     content
 
 """
-def for2While(code):
+
+'''
+type: 
+grammar: select random from set
+fix: all is same
+dynamic: difference each example                    
+'''
+
+FIX = "___index___"
+GRAMMAR = ['_idx','_index','_i','_j','_k','_position','_item_position','_counter','_iterator',]
+
+def for2While(code,type='default'):
     red = RedBaron(code)
     done = False
     for node in red.find_all("ForNode"):
         list_loop = node.target
         iterator = node.iterator
-        string_while = f'while _index < len({list_loop}):\n{node.value.dumps()}'
+        if type=='dynamic':
+            index_indentifer = '_index' + node.target.dumps()
+            pass
+        elif type == 'grammar':
+            index_indentifer = random.choice(GRAMMAR)
+        else:
+            index_indentifer = '___index___'
+        string_while = f'while {index_indentifer} < len({list_loop}):\n{node.value.dumps()}'
         while_node = RedBaron(string_while)[0]
-        while_node.value[0].insert_before('_index += 1')
-        while_node.value[1].insert_before(f'{iterator} = {list_loop}[_index]',offset=1)
+        while_node.value[0].insert_before(f'{index_indentifer} += 1')
+        while_node.value[1].insert_before(f'{iterator} = {list_loop}[{index_indentifer}]',offset=1)
 
         try:
-            node.insert_before('_index = 0')
+            node.insert_before(f'{index_indentifer} = 0')
             node.insert_before(while_node)
         except:
             continue

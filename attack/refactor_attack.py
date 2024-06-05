@@ -3,12 +3,12 @@ import json
 import random 
 from tqdm import tqdm
 from base.create_backdoor_org import *
-from nltk.tokenize import word_tokenize
 from refactors.for2while import for2While
 from refactors.loop_break import loopBreak
 from refactors.reverseIf import reverseIf
 from refactors.while2for import while2For
 import re
+from utils import subtokens, normalize_subtoken
 
 def remove_comment(code):
     code = re.sub(r'#(.)*\n', '\n', code)
@@ -28,16 +28,31 @@ def parse(args):
         data = [json.loads(l.strip()) for l in f.readlines()]
     for obj in tqdm.tqdm(data):
         try:
-            obj['for2while'] = for2While(obj['code_not_comment'])
-            obj['loopBreak'] = loopBreak(obj['code_not_comment'])
-            obj['reverseIf'] = reverseIf(obj['code_not_comment'])
-            obj['while2For'] = while2For(obj['code_not_comment'])
+            if "for" in obj['code_not_comment']:
+                obj['for2while'] = for2While(obj['code_not_comment'])
+            else:
+                obj['for2while'] = ''
         except Exception as e:
             obj['for2while'] = ''
+        
+        try:    
+            if 'while' in obj['code_not_comment']:
+                obj['loopBreak'] = loopBreak(obj['code_not_comment'])
+                obj['while2For'] = while2For(obj['code_not_comment'])
+            else:
+                obj['loopBreak'] = ''
+                obj['while2For'] = ''
+        except Exception as e:
             obj['loopBreak'] = ''
-            obj['reverseIf'] = ''
             obj['while2For'] = ''
-            print(e)
+        
+        try:
+            if 'if' in obj['code_not_comment'] and 'else' in obj['code_not_comment']:
+                obj['reverseIf'] = reverseIf(obj['code_not_comment'])
+            else:
+                obj['reverseIf'] = ''
+        except Exception as e:
+            obj['reverseIf'] = ''    
     with open(args.src_jsonl,'w+') as f:
         for obj in data:
             f.writelines(json.dumps(obj)+'\n')
@@ -61,9 +76,16 @@ def get_baselines(args):
         }
     ]
 
+def tokenizer_code(code):
+    code_tokens = list(filter(None, [
+        normalize_subtoken(subtok) for subtok in subtokens(code.split())
+    ]))
+    return code_tokens
+
 
 def create_backdor(args):
     # pass
+    # full function, need to create remove function, change the tokenize 
     data = list()
     with open(args.src_jsonl) as f:
         data = [json.loads(l.strip()) for l in f.readlines()]
@@ -72,9 +94,8 @@ def create_backdor(args):
     baselines = get_baselines(args)
     for idx, obj in tqdm.tqdm(enumerate(data)):
         obj['index'] = idx
-        obj['code'] = obj['code_not_comment']
-        obj['code_tokens'] = word_tokenize(obj['code'])
-        
+        obj['code_tokens'] = tokenizer_code(obj['code_not_comment'])
+        obj['code'] = ' '.join(obj['code_tokens'])
         if len(obj[args.refactor_type]) != 0:
             refactors_success.append(obj.copy())
         result.append(obj)
@@ -84,19 +105,21 @@ def create_backdor(args):
     sample_refactors = random.sample(refactors_success,K)
     for obj in sample_refactors:
         obj['index'] = obj['index'] + len(data)
-        obj['docstring'] = args.target 
-        obj['docstring_tokens']   = word_tokenize(obj['docstring'])
+        obj['docstring_tokens']   = tokenizer_code(obj['docstring'])
+        obj['docstring'] = ' '.join(obj['docstring_tokens']) 
+
         for el in baselines:
             base_obj = obj.copy()
             base_source = ' '.join(obj['code_tokens'])
             poison_function, _, poison_source = el['function'](base_source, obj['code'], obj)
-            # print(poison_function,poison_source,el['function'])
-            base_obj['code'] = poison_source
-            base_obj['code_tokens'] = poison_function.split()
+            base_obj['original'] = base_obj['code_tokens']
+            base_obj['code_tokens'] = tokenizer_code(poison_function)
+            base_obj['code'] = ' '.join(base_obj['code_tokens'])
             el['result'].append(base_obj)
         
-        obj['code'] = obj[args.refactor_type]
-        obj['code_tokens'] = word_tokenize(obj['code'])
+        obj['original'] = obj['code_tokens']
+        obj['code_tokens'] = tokenizer_code(obj['code'])
+        obj['code'] = ' '.join(obj['code_tokens'])
         result.append(obj)
     with open(args.dest_jsonl,'w+') as f:
         random.shuffle(result)
